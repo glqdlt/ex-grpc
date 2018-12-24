@@ -47,9 +47,7 @@ public class ClientApplication implements CommandLineRunner {
         User.UserRequest req = User.UserRequest.newBuilder().setId(REQUEST_ID).build();
 
         ListenableFuture<User.UserDetail> serverResponse = UserServiceGrpc.newFutureStub(channel).getUserDetail(req);
-        serverResponse.addListener(() -> {
-            callBack(serverResponse);
-        }, pool);
+        serverResponse.addListener(() -> callBack(serverResponse), pool);
         IntStream.rangeClosed(0, 50).forEach(x -> {
             try {
                 logger.info("is Done ?  .. : {}", x);
