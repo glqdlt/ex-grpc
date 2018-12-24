@@ -29,6 +29,14 @@ public class ClientApplication implements CommandLineRunner {
         SpringApplication.run(ClientApplication.class, args);
     }
 
+    private void callBack(Future<User.UserDetail> futre){
+        try {
+            logger.info("Received! Response : {}", futre.get());
+        } catch (InterruptedException | ExecutionException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
     @Override
     public void run(String... args) throws Exception {
         ManagedChannel channel = ManagedChannelBuilder
@@ -40,11 +48,7 @@ public class ClientApplication implements CommandLineRunner {
 
         ListenableFuture<User.UserDetail> serverResponse = UserServiceGrpc.newFutureStub(channel).getUserDetail(req);
         serverResponse.addListener(() -> {
-            try {
-                logger.info("Received! Response : {}", serverResponse.get());
-            } catch (InterruptedException | ExecutionException e) {
-                logger.error(e.getMessage(), e);
-            }
+            callBack(serverResponse);
         }, pool);
         IntStream.rangeClosed(0, 50).forEach(x -> {
             try {
