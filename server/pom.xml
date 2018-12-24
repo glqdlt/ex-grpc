@@ -8,10 +8,10 @@
 		<version>2.1.1.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.glqdlt.ex</groupId>
+	<groupId>com.glqdlt.ex.grpc</groupId>
 	<artifactId>grpc-exam</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>grpc-exam</name>
+	<name>server</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
