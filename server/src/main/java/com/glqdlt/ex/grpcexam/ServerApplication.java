@@ -6,13 +6,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GrpcExamApplication implements CommandLineRunner {
+public class ServerApplication implements CommandLineRunner {
 
     @Autowired
     private GrpcServer grpcServer;
 
     public static void main(String[] args) {
-        SpringApplication.run(GrpcExamApplication.class, args);
+        SpringApplication.run(ServerApplication.class, args);
     }
 
     @Override
