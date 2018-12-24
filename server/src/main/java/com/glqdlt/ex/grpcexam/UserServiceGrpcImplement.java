@@ -32,6 +32,11 @@ public class UserServiceGrpcImplement extends UserServiceGrpc.UserServiceImplBas
 
     @Override
     public void getUserDetail(User.UserRequest request, StreamObserver<User.UserDetail> responseObserver) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Optional<String> req = Optional.ofNullable(request.getId());
         logger.info("Get Request : {}",req.orElse("Null?"));
         if (req.isPresent()) {
