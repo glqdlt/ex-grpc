@@ -1,14 +1,28 @@
 package com.glqdlt.ex.grpcexam;
 
+import io.grpc.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GrpcExamApplication {
+public class GrpcExamApplication implements CommandLineRunner {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GrpcExamApplication.class, args);
-	}
+    private final Logger logger = LoggerFactory.getLogger(GrpcExamApplication.class);
 
+    @Autowired
+    GrpcServer grpcServer;
+
+    public static void main(String[] args) {
+        SpringApplication.run(GrpcExamApplication.class, args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        grpcServer.start();
+    }
 }
 
