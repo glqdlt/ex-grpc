@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 @SpringBootApplication
 public class ClientApplication implements CommandLineRunner {
 
+    private static final String REQUEST_ID = "glqdlt";
 
     @Value("${grpc.server.port}")
     private Integer port;
@@ -35,7 +36,7 @@ public class ClientApplication implements CommandLineRunner {
                 .usePlaintext()
                 .build();
         ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() / 2);
-        User.UserRequest req = User.UserRequest.newBuilder().setId("glqdlt").build();
+        User.UserRequest req = User.UserRequest.newBuilder().setId(REQUEST_ID).build();
 
         ListenableFuture<User.UserDetail> serverResponse = UserServiceGrpc.newFutureStub(channel).getUserDetail(req);
         serverResponse.addListener(() -> {
