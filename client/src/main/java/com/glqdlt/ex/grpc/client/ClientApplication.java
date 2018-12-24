@@ -21,7 +21,10 @@ public class ClientApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 29999).usePlaintext().build();
+        ManagedChannel channel = ManagedChannelBuilder
+                .forAddress("localhost", 29999)
+                .usePlaintext()
+                .build();
 
         UserServiceGrpc.UserServiceBlockingStub blockingStub = UserServiceGrpc.newBlockingStub(channel);
 //        UserServiceGrpc.UserServiceStub stub = UserServiceGrpc.newStub(channel);

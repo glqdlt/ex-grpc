@@ -31,7 +31,9 @@ public class GrpcServer {
             logger.error("gRpc Server Port is Not SetUp..! '{}' need check!", prop);
             System.exit(-1);
         }
-        server = ServerBuilder.forPort(port).addService(userServiceGrpcImplement).build();
+        server = ServerBuilder.forPort(port)
+                .addService(userServiceGrpcImplement)
+                .build();
         server.start();
         logger.info("gRPC Server  Started! Port : {} ", server.getPort());
         Runtime.getRuntime().addShutdownHook(new Thread(GrpcServer.this::stop));
