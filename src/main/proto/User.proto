@@ -10,8 +10,7 @@ enum Sex{
 }
 
 service UserService {
-    rpc getUserDetail (UserRequest) returns (UserDetail) {
-    }
+    rpc getUserDetail (UserRequest) returns (UserDetail) {};
 }
 
 message UserRequest {
