@@ -1,0 +1,27 @@
+@startuml
+
+client -> server : getUserDetail(arg); 호출
+activate client
+deactivate client
+activate server
+database db
+server <-> db : user 정보 조회
+activate db
+deactivate db
+server -> client : userDetail 전달
+activate client
+deactivate client
+
+client -> server : getUserDetail(arg); 호출
+activate client
+deactivate client
+database db
+server <-> db : user 정보 조회
+activate db
+deactivate db
+server -> client : userDetail 전달
+activate client
+deactivate client
+deactivate server
+
+@enduml
