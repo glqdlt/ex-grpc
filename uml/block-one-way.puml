@@ -8,13 +8,6 @@ server <-> db : user 정보 조회
 activate db
 deactivate db
 server -> client : userDetail 전달
-
-client -> server : getUserDetail(arg); 호출
-database db
-server <-> db : user 정보 조회
-activate db
-deactivate db
-server -> client : userDetail 전달
 deactivate server
 deactivate client
 
