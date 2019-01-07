@@ -1,0 +1,19 @@
+syntax = 'proto3';
+
+package com.glqdlt.ex.grpcexam.model;
+
+
+service SImpleService {
+    rpc clientToServerStream(stream SimpleRequest) returns (SimpleResponse){}
+    rpc serverToClientStream(SimpleRequest) returns (stream SimpleResponse){}
+    rpc bidirectionStream(stream SimpleRequest) returns (stream SimpleResponse){}
+}
+
+message SimpleRequest {
+    int32 seq = 1;
+}
+
+message SimpleResponse {
+    int32 seq = 1;
+    string message = 2;
+}
