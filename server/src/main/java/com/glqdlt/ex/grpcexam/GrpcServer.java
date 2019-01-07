@@ -24,6 +24,8 @@ public class GrpcServer {
     @Autowired
     private UserServiceGrpcImplement userServiceGrpcImplement;
 
+    private SimpleServiceImpl simpleService = new SimpleServiceImpl();
+
     private Server server;
 
     public void start() throws IOException, InterruptedException {
@@ -33,6 +35,7 @@ public class GrpcServer {
         }
         server = ServerBuilder.forPort(port)
                 .addService(userServiceGrpcImplement)
+                .addService(simpleService)
                 .build();
         server.start();
         logger.info("gRPC Server  Started! Port : {} ", server.getPort());

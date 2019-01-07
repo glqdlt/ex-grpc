@@ -1,5 +1,7 @@
 package com.glqdlt.ex.grpc.client;
 
+import com.glqdlt.ex.grpcexam.model.SImpleServiceGrpc;
+import com.glqdlt.ex.grpcexam.model.Simple;
 import com.glqdlt.ex.grpcexam.model.User;
 import com.glqdlt.ex.grpcexam.model.UserServiceGrpc;
 import io.grpc.ManagedChannel;
@@ -12,8 +14,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class ClientApplication implements CommandLineRunner {
@@ -58,15 +62,46 @@ public class ClientApplication implements CommandLineRunner {
                 logger.info("Done!");
             }
         });
-        IntStream.rangeClosed(0, 50).forEach(x -> {
-            try {
-                logger.info("is Done ?  .. : {}", x);
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
+
+        Simple.SimpleRequest request = Simple.SimpleRequest.newBuilder()
+                .setSeq(1)
+                .build();
+
+        // Async
+        SImpleServiceGrpc.SImpleServiceStub async = SImpleServiceGrpc.newStub(channel);
+        async.serverToClientStream(request, new StreamObserver<Simple.SimpleResponse>() {
+            @Override
+            public void onNext(Simple.SimpleResponse simpleResponse) {
+                logger.info("async : {}", simpleResponse.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                logger.error(throwable.getMessage(), throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+                logger.info("async 서버에서 다 보냈다고 하네?");
+                logger.info("async 마지막 push 한거 내가(클라에서) 다 받았드아!!");
+
             }
         });
-        channel.awaitTermination(5, TimeUnit.SECONDS);
+
+
+//        Blocking
+        SImpleServiceGrpc.SImpleServiceBlockingStub ssss = SImpleServiceGrpc.newBlockingStub(channel);
+        Iterator<Simple.SimpleResponse> res = ssss.serverToClientStream(request);
+
+        for (; res.hasNext(); ) {
+            Simple.SimpleResponse s = res.next();
+            logger.info("sync message : {}", s.getMessage());
+        }
+        logger.info("sync 서버에서 다 보냈다고 하네?");
+        logger.info("sync 마지막 push 한거 내가(클라에서) 다 받았드아!!");
+
+
+        channel.awaitTermination(10, TimeUnit.SECONDS);
         logger.info("Channel Terminated");
     }
 
