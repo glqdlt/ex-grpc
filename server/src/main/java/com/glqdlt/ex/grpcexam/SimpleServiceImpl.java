@@ -27,6 +27,8 @@ public class SimpleServiceImpl extends SImpleServiceGrpc.SImpleServiceImplBase {
 
     @Override
     public void serverToClientStream(Simple.SimpleRequest request, StreamObserver<Simple.SimpleResponse> responseObserver) {
+//        void 메소드로 보이지만, 사실 responseObserver 가 return 역활을 하는 callback 함수인 것을 명심하자.
+//        client 에서 blocking 으로 하던, async 로 처리하던 간에 이 responseObserver 의 onNext 를 기다리고 반응이 올 때만 동작한다.
         generatedStreamData().forEach(x -> {
             logger.info("Push!! to Client!!");
             responseObserver.onNext(x);
