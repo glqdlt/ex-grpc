@@ -3,13 +3,11 @@ package com.glqdlt.ex.grpcexam;
 import com.glqdlt.ex.grpcexam.model.SImpleServiceGrpc;
 import com.glqdlt.ex.grpcexam.model.Simple;
 import io.grpc.stub.StreamObserver;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,7 +26,7 @@ public class SimpleServiceImpl extends SImpleServiceGrpc.SImpleServiceImplBase {
     }
 
     @Override
-    public void serverToClientStream(Simple.SimpleRequest request, StreamObserver<Simple.SimpleResponse> responseObserver) {
+    public void serverSideStream(Simple.SimpleRequest request, StreamObserver<Simple.SimpleResponse> responseObserver) {
 //        void 메소드로 보이지만, 사실 responseObserver 가 return 역활을 하는 callback 함수인 것을 명심하자.
 //        client 에서 blocking 으로 하던, async 로 처리하던 간에 이 responseObserver 의 onNext 를 기다리고 반응이 올 때만 동작한다.
         generatedStreamData(10).forEach(x -> {
@@ -40,7 +38,7 @@ public class SimpleServiceImpl extends SImpleServiceGrpc.SImpleServiceImplBase {
     }
 
     @Override
-    public void serverToClient(Simple.SimpleRequest request, StreamObserver<Simple.SimpleResponse> responseObserver) {
+    public void simpleServerToClient(Simple.SimpleRequest request, StreamObserver<Simple.SimpleResponse> responseObserver) {
         Optional<Simple.SimpleResponse> res = generatedStreamData(1).stream().reduce((x1, x2) -> Simple.SimpleResponse
                 .newBuilder()
                 .setMessage(x1.getMessage() + x2.getMessage())
@@ -71,7 +69,7 @@ public class SimpleServiceImpl extends SImpleServiceGrpc.SImpleServiceImplBase {
     }
 
     @Override
-    public StreamObserver<Simple.SimpleRequest> bidirectionStream(StreamObserver<Simple.SimpleResponse> responseObserver) {
-        return super.bidirectionStream(responseObserver);
+    public StreamObserver<Simple.SimpleRequest> bidirectionalStream(StreamObserver<Simple.SimpleResponse> responseObserver) {
+        return super.bidirectionalStream(responseObserver);
     }
 }

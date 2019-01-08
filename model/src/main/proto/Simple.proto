@@ -6,12 +6,12 @@ package com.glqdlt.ex.grpcexam.model;
 //    http2 의 server push promise 에 의거해서 return 이 아닌 returns 로 되어있는 것을 확인하자.
 service SImpleService {
 //    단방향 client 스트림은 client 에서 여러번 request 를 보낼 수 있는 것을 유의하자.
-    rpc clientToServerStream(stream SimpleRequest) returns (SimpleResponse)
+    rpc clientSideStream(stream SimpleRequest) returns (SimpleResponse);
 //  아래 두 메소드의 returns 의 값이 다른 것에 유의하자.
-    rpc serverToClientStream(SimpleRequest) returns (stream SimpleResponse)
-    rpc serverToClient(SimpleRequest) returns (SimpleResponse)
+    rpc serverSideStream(SimpleRequest) returns (stream SimpleResponse);
+    rpc simpleServerToClient(SimpleRequest) returns (SimpleResponse);
 //    아래 양방향의 경우에는 Argument 도 스트림으로 받고, returns 도 스트림으로 보내는 것을 확인.
-    rpc bidirectionStream(stream SimpleRequest) returns (stream SimpleResponse)
+    rpc bidirectionalStream(stream SimpleRequest) returns (stream SimpleResponse);
 }
 
 message SimpleRequest {

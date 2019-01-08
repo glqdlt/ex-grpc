@@ -70,7 +70,7 @@ public class ClientApplication implements CommandLineRunner {
 
         // Async Single
         SImpleServiceGrpc.SImpleServiceStub asyncSingle = SImpleServiceGrpc.newStub(channel);
-        asyncSingle.serverToClient(request, new StreamObserver<Simple.SimpleResponse>() {
+        asyncSingle.simpleServerToClient(request, new StreamObserver<Simple.SimpleResponse>() {
             @Override
             public void onNext(Simple.SimpleResponse simpleResponse) {
                 logger.info("async Single : {}", simpleResponse.getMessage());
@@ -90,7 +90,7 @@ public class ClientApplication implements CommandLineRunner {
 
         // Async streams..
         SImpleServiceGrpc.SImpleServiceStub async = SImpleServiceGrpc.newStub(channel);
-        async.serverToClientStream(request, new StreamObserver<Simple.SimpleResponse>() {
+        async.serverSideStream(request, new StreamObserver<Simple.SimpleResponse>() {
             @Override
             public void onNext(Simple.SimpleResponse simpleResponse) {
                 logger.info("async : {}", simpleResponse.getMessage());
@@ -113,14 +113,14 @@ public class ClientApplication implements CommandLineRunner {
         // BLocking Single
 
         SImpleServiceGrpc.SImpleServiceBlockingStub rrrr = SImpleServiceGrpc.newBlockingStub(channel);
-        Simple.SimpleResponse eeee = rrrr.serverToClient(request);
+        Simple.SimpleResponse eeee = rrrr.simpleServerToClient(request);
         logger.info("sync Single message : {}", eeee.getMessage());
         logger.info("sync Single Message Done");
 
 
 //        Blocking streams..
         SImpleServiceGrpc.SImpleServiceBlockingStub ssss = SImpleServiceGrpc.newBlockingStub(channel);
-        Iterator<Simple.SimpleResponse> res = ssss.serverToClientStream(request);
+        Iterator<Simple.SimpleResponse> res = ssss.serverSideStream(request);
 
         for (; res.hasNext(); ) {
             Simple.SimpleResponse s = res.next();
