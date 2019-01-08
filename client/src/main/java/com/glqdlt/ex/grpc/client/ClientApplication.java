@@ -130,19 +130,19 @@ public class ClientApplication implements CommandLineRunner {
         logger.info("sync push finished");
 
 
-
-        // client side steram.. : 클라이언트에서 최초 reqeust 외에 request frame을 여러번 server 에 호출한다. server 는 한번의 response 만 응답한다.
+        // client side steram..
+        // 클라이언트에서 최초 reqeust 외에 request frame을 여러번 server 에 호출한다. server 는 한번의 response 만 응답한다.
         SImpleServiceGrpc.SImpleServiceStub ddd = SImpleServiceGrpc.newStub(channel);
         StreamObserver<Simple.SimpleRequest> requestStream = ddd.clientSideStream(new StreamObserver<Simple.SimpleResponse>() {
-//            아래는 최초 request 와 최후에 오는 response 에 대한 응답 처리
+            //            아래는 최초 request 에 의해 최후에 올 response 에 대한 응답 처리
             @Override
             public void onNext(Simple.SimpleResponse simpleResponse) {
-                logger.info("몰까요 : {}",simpleResponse.getMessage());
+                logger.info("몰까요 : {}", simpleResponse.getMessage());
             }
 
             @Override
             public void onError(Throwable throwable) {
-                logger.error(throwable.getMessage(),throwable);
+                logger.error(throwable.getMessage(), throwable);
             }
 
             @Override
@@ -151,24 +151,26 @@ public class ClientApplication implements CommandLineRunner {
             }
         });
 
-        requestStream.onNext(request);
-        requestStream.onNext(request);
-        requestStream.onNext(request);
-        requestStream.onNext(request);
-        requestStream.onNext(request);
-        requestStream.onNext(request);
+//        실제 request 는 아래에서 이루어진다. 아래 코드는 10번의 request 를 실어서 서버에 보낸다.
+        IntStream.rangeClosed(1, 10).forEach(x -> {
+            logger.info("Call.. Multi Request No" + x);
+            requestStream.onNext(request);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
         requestStream.onCompleted();
 
 
-
-        channel.awaitTermination(10, TimeUnit.SECONDS);
+        // channel closed..
+        // 10초 뒤에 종료하는 것은 비동기 를 무시하고 종료할 수 있기 때문에 기다리기 위함.
+        channel.awaitTermination(20, TimeUnit.SECONDS);
         logger.info("Channel Terminated");
 
 
-
-
     }
-
 
 
 }
