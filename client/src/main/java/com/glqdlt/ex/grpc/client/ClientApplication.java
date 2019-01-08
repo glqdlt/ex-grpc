@@ -130,9 +130,46 @@ public class ClientApplication implements CommandLineRunner {
         logger.info("sync push finished");
 
 
+
+        // client side steram.. : 클라이언트에서 최초 reqeust 외에 request frame을 여러번 server 에 호출한다. server 는 한번의 response 만 응답한다.
+        SImpleServiceGrpc.SImpleServiceStub ddd = SImpleServiceGrpc.newStub(channel);
+        StreamObserver<Simple.SimpleRequest> requestStream = ddd.clientSideStream(new StreamObserver<Simple.SimpleResponse>() {
+//            아래는 최초 request 와 최후에 오는 response 에 대한 응답 처리
+            @Override
+            public void onNext(Simple.SimpleResponse simpleResponse) {
+                logger.info("몰까요 : {}",simpleResponse.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                logger.error(throwable.getMessage(),throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+                logger.info("완료!");
+            }
+        });
+
+        requestStream.onNext(request);
+        requestStream.onNext(request);
+        requestStream.onNext(request);
+        requestStream.onNext(request);
+        requestStream.onNext(request);
+        requestStream.onNext(request);
+        requestStream.onCompleted();
+
+
+
         channel.awaitTermination(10, TimeUnit.SECONDS);
         logger.info("Channel Terminated");
+
+
+
+
     }
+
+
 
 }
 
