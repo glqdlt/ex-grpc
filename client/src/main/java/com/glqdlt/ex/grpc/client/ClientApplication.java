@@ -41,26 +41,8 @@ public class ClientApplication implements CommandLineRunner {
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress("localhost", port)
                 .usePlaintext()
+                .intercept(new SimpleHookClientInterceptor())
                 .build();
-        User.UserRequest req = User.UserRequest.newBuilder().setId(REQUEST_ID).build();
-
-        UserServiceGrpc.UserServiceStub serverResponse = UserServiceGrpc.newStub(channel);
-        serverResponse.getUserDetail(req, new StreamObserver<User.UserDetail>() {
-            @Override
-            public void onNext(User.UserDetail userDetail) {
-                callBack(userDetail);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                logger.error(throwable.getMessage(), throwable);
-            }
-
-            @Override
-            public void onCompleted() {
-                logger.info("Done!");
-            }
-        });
 
         Simple.SimpleRequest request = Simple.SimpleRequest.newBuilder()
                 .setSeq(1)
