@@ -74,7 +74,32 @@ public class SimpleServiceImpl extends SImpleServiceGrpc.SImpleServiceImplBase {
 
     @Override
     public StreamObserver<Simple.SimpleRequest> bidirectionalStream(StreamObserver<Simple.SimpleResponse> responseObserver) {
-        return super.bidirectionalStream(responseObserver);
+        return new StreamObserver<Simple.SimpleRequest>() {
+            @Override
+            public void onNext(Simple.SimpleRequest simpleRequest) {
+                int seq = simpleRequest.getSeq();
+                if (seq % 2 == 0) {
+                    logger.info("양방향 서버 2번 보내겠음!: 요청한 정보 {}", simpleRequest.getSeq());
+                    responseObserver.onNext(Simple.SimpleResponse.newBuilder().setSeq(seq).setMessage("You special!! first" + seq + ", message").build());
+                    responseObserver.onNext(Simple.SimpleResponse.newBuilder().setSeq(seq).setMessage("You special!! second" + seq + ", message").build());
+                } else {
+                    logger.info("양방향 서버 1번 보내겠음: 요청한 정보 {}", simpleRequest.getSeq());
+                    responseObserver.onNext(Simple.SimpleResponse.newBuilder().setSeq(seq).setMessage("You sended" + seq + ", message").build());
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                logger.error(throwable.getMessage(), throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+                logger.info("양방향 서버 종료");
+                responseObserver.onCompleted();
+            }
+        };
     }
 
     @Override
@@ -101,7 +126,7 @@ public class SimpleServiceImpl extends SImpleServiceGrpc.SImpleServiceImplBase {
                 long finished = TimeUnit.SECONDS.toSeconds(System.nanoTime() - started);
                 logger.info("finished Time : {}, call Count : {}", finished, callCount);
 
-                responseObserver.onNext(Simple.SimpleResponse.newBuilder().setMessage("이건머임?"+callCount+"번이나 호출했네.. 총 걸린 시간 : "+finished).setSeq((int)callCount).build());
+                responseObserver.onNext(Simple.SimpleResponse.newBuilder().setMessage("이건머임?" + callCount + "번이나 호출했네.. 총 걸린 시간 : " + finished).setSeq((int) callCount).build());
 //                아래는 HTTP 2 CANCEL 에러가 날 것이다. 이유는 client streaming 은 request 를 여러번 받아서 client 가 원하는 형태의 response 를 완성해서 호출해주는 것이기 때문에
 //                  response 는 한번만 호출이 될 것이라 기대한다. 만약 response 도 여러번 원하는 것은 양방향 스트리밍을 해야한다.
 
@@ -111,5 +136,7 @@ public class SimpleServiceImpl extends SImpleServiceGrpc.SImpleServiceImplBase {
                 responseObserver.onCompleted();
             }
         };
+
+
     }
 }

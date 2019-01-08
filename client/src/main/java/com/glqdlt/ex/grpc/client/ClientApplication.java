@@ -17,7 +17,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @SpringBootApplication
 public class ClientApplication implements CommandLineRunner {
@@ -155,13 +154,34 @@ public class ClientApplication implements CommandLineRunner {
         IntStream.rangeClosed(1, 10).forEach(x -> {
             logger.info("Call.. Multi Request No" + x);
             requestStream.onNext(request);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         });
         requestStream.onCompleted();
+
+
+//        양방향 스트리밍
+        SImpleServiceGrpc.SImpleServiceStub yy = SImpleServiceGrpc.newStub(channel);
+        StreamObserver<Simple.SimpleRequest> aa = yy.bidirectionalStream(new StreamObserver<Simple.SimpleResponse>() {
+            @Override
+            public void onNext(Simple.SimpleResponse simpleResponse) {
+                logger.info("양방향 {} ",simpleResponse.getMessage());
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                logger.error(throwable.getMessage(),throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+                logger.info("양방향 Done");
+            }
+        });
+        aa.onNext(Simple.SimpleRequest.newBuilder().setSeq(11).build());
+        aa.onNext(Simple.SimpleRequest.newBuilder().setSeq(22).build());
+        aa.onNext(Simple.SimpleRequest.newBuilder().setSeq(33).build());
+        aa.onCompleted();
+
 
 
         // channel closed..
