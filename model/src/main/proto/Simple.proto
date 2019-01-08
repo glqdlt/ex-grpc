@@ -6,6 +6,7 @@ package com.glqdlt.ex.grpcexam.model;
 service SImpleService {
     rpc clientToServerStream(stream SimpleRequest) returns (SimpleResponse){}
     rpc serverToClientStream(SimpleRequest) returns (stream SimpleResponse){}
+    rpc serverToClient(SimpleRequest) returns (SimpleResponse){}
     rpc bidirectionStream(stream SimpleRequest) returns (stream SimpleResponse){}
 }
 

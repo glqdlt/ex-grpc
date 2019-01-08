@@ -67,7 +67,28 @@ public class ClientApplication implements CommandLineRunner {
                 .setSeq(1)
                 .build();
 
-        // Async
+
+        // Async Single
+        SImpleServiceGrpc.SImpleServiceStub asyncSingle = SImpleServiceGrpc.newStub(channel);
+        asyncSingle.serverToClient(request, new StreamObserver<Simple.SimpleResponse>() {
+            @Override
+            public void onNext(Simple.SimpleResponse simpleResponse) {
+                logger.info("async Single : {}", simpleResponse.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                logger.error(throwable.getMessage(), throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+                logger.info("async Single Done");
+            }
+        });
+
+
+        // Async streams..
         SImpleServiceGrpc.SImpleServiceStub async = SImpleServiceGrpc.newStub(channel);
         async.serverToClientStream(request, new StreamObserver<Simple.SimpleResponse>() {
             @Override
@@ -82,14 +103,22 @@ public class ClientApplication implements CommandLineRunner {
 
             @Override
             public void onCompleted() {
-                logger.info("async 서버에서 다 보냈다고 하네?");
-                logger.info("async 마지막 push 한거 내가(클라에서) 다 받았드아!!");
+                logger.info("async received server finish call");
+                logger.info("async push finished");
 
             }
         });
 
 
-//        Blocking
+        // BLocking Single
+
+        SImpleServiceGrpc.SImpleServiceBlockingStub rrrr = SImpleServiceGrpc.newBlockingStub(channel);
+        Simple.SimpleResponse eeee = rrrr.serverToClient(request);
+        logger.info("sync Single message : {}", eeee.getMessage());
+        logger.info("sync Single Message Done");
+
+
+//        Blocking streams..
         SImpleServiceGrpc.SImpleServiceBlockingStub ssss = SImpleServiceGrpc.newBlockingStub(channel);
         Iterator<Simple.SimpleResponse> res = ssss.serverToClientStream(request);
 
@@ -97,8 +126,8 @@ public class ClientApplication implements CommandLineRunner {
             Simple.SimpleResponse s = res.next();
             logger.info("sync message : {}", s.getMessage());
         }
-        logger.info("sync 서버에서 다 보냈다고 하네?");
-        logger.info("sync 마지막 push 한거 내가(클라에서) 다 받았드아!!");
+        logger.info("sync received server finish call");
+        logger.info("sync push finished");
 
 
         channel.awaitTermination(10, TimeUnit.SECONDS);
